@@ -25,6 +25,7 @@ namespace TokenApp.Controllers
         }
 
         [HttpGet("GetToken")]
+        //https://localhost:7005/api/Account/GetToken
         public string GetToken()
         {
             List<Claim> claims = new List<Claim>();
@@ -43,6 +44,7 @@ namespace TokenApp.Controllers
                 signingCredentials: new SigningCredentials(signingKey, SecurityAlgorithms.HmacSha256)
             );
             return new JwtSecurityTokenHandler().WriteToken(jwt);
+            
         }
     }
 }

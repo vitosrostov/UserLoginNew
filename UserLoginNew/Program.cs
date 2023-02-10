@@ -37,17 +37,17 @@ builder.Services.AddAuthentication(option =>
 });
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
-//builder.Services.AddEndpointsApiExplorer();
-//builder.Services.AddSwaggerGen();
+builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddSwaggerGen();
 
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
-//if (app.Environment.IsDevelopment())
-//{
-  //  app.UseSwagger();
-  //  app.UseSwaggerUI();
-//}
+if (app.Environment.IsDevelopment())
+{
+  app.UseSwagger();
+  app.UseSwaggerUI();
+}
 
 app.UseHttpsRedirection();
 
@@ -55,5 +55,11 @@ app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
-app.MapGet("/",(ApplicationContext db)=> db.Users.ToList());
+//app.MapPost("/api/login",(ApplicationContext db)=> db.Users.ToList());
+app.MapPost("/api/login", async (HttpContext httpContext) =>
+{
+    using StreamReader reader = new StreamReader(httpContext.Response.Body);
+    string name = await reader.ReadToEndAsync();
+    return $"полученые данные: {name}";
+});
 app.Run();
