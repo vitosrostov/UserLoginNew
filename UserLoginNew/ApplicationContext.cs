@@ -9,9 +9,9 @@ public class ApplicationContext : DbContext
     //protected override void onmodelcreating(modelbuilder modelbuilder)
     //{
     //    modelbuilder.entity<users>().hasdata(
-    //        new users { id = 1, login = "tom", pass = "37" },
-    //        new users { id = 2, login = "bob", pass = "41" },
-    //        new users { id = 3, login = "sam", pass = "37" }
+    //        new users { id = 1, login = "tom", pass = "123" },
+    //        new users { id = 2, login = "bob", pass = "456" },
+    //        new users { id = 3, login = "sam", pass = "789" }
     //        );
     //}
 }

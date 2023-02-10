@@ -10,7 +10,7 @@ builder.Services.AddDbContext<ApplicationContext>(options => options.UseNpgsql(c
 // Add services to the container.
 builder.Services.Configure<JWTSettings>(builder.Configuration.GetSection("JWTSettings"));
 
-//Секретные фразы
+//secret 
 var secretKey = builder.Configuration.GetSection("JWTSettings:SecretKey").Value;
 var issuer = builder.Configuration.GetSection("JWTSettings:Issuer").Value;
 var audience = builder.Configuration.GetSection("JWTSettings:Audience").Value;
@@ -60,6 +60,6 @@ app.MapPost("/api/login", async (HttpContext httpContext) =>
 {
     using StreamReader reader = new StreamReader(httpContext.Response.Body);
     string name = await reader.ReadToEndAsync();
-    return $"полученые данные: {name}";
+    return $"get data: {name}";
 });
 app.Run();
