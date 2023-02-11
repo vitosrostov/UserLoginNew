@@ -5,18 +5,19 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
-//using TokenApp.Models; // класс Person
 using Microsoft.AspNetCore.Authentication.OAuth;
 using Microsoft.Extensions.Options;
 using UserLoginNew;
 using System.Text;
 using System.Data;
+using Microsoft.EntityFrameworkCore;
+using System.Security.Cryptography.X509Certificates;
 
 namespace TokenApp.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
-    public class AccountController : Controller
+    public class AccountController : Controller 
     {
         private readonly JWTSettings _options;
         public AccountController(IOptions<JWTSettings> optAccess)
@@ -24,27 +25,43 @@ namespace TokenApp.Controllers
             _options = optAccess.Value;
         }
 
-        [HttpGet("GetToken")]
+        [HttpPost("GetToken")]
         //https://localhost:7005/api/Account/GetToken
-        public string GetToken()
+        public dynamic GetToken(string login, string pass, ApplicationContext db)
         {
-            List<Claim> claims = new List<Claim>();
-            claims.Add(new Claim(ClaimTypes.Name, "Nataly"));
-            claims.Add(new Claim("level", "123"));
-            claims.Add(new Claim(ClaimTypes.Role, "Admin"));
-
-            var signingKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_options.SecretKey));
-
-            var jwt = new JwtSecurityToken(
-                issuer: _options.Issuer,
-                audience: _options.Audience,
-                claims: claims,
-                expires: DateTime.UtcNow.Add(TimeSpan.FromMinutes(1)),
-                notBefore: DateTime.UtcNow,
-                signingCredentials: new SigningCredentials(signingKey, SecurityAlgorithms.HmacSha256)
-            );
-            return new JwtSecurityTokenHandler().WriteToken(jwt);
             
+            //var comps = db.Users.FromSqlRaw("Select Id FROM Users WHERE Login='Tom'").ToList();
+            // (select Id u => u.Login== "Tom").ToList();
+            //var comps = db.Users.Where(Users => Users.Login== login).ToString();
+            //var users = db.Users.ToList();
+            var users = db.Users.Where(Users => Users.Login == login & Users.Pass == pass).ToList();
+            Console.WriteLine($"user is true:{users.Count}");
+            
+            foreach (Users u in users)
+            {
+                Console.WriteLine($"{u.Id} {u.Login} {u.Pass}");
+            }
+           
+            if (users.Count == 1)
+            {
+                List<Claim> claims = new List<Claim>();
+                claims.Add(new Claim(ClaimTypes.Name, login));
+                claims.Add(new Claim("level", "123"));
+                claims.Add(new Claim(ClaimTypes.Role, "Admin"));
+
+                var signingKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_options.SecretKey));
+
+                var jwt = new JwtSecurityToken(
+                    issuer: _options.Issuer,
+                    audience: _options.Audience,
+                    claims: claims,
+                    expires: DateTime.UtcNow.Add(TimeSpan.FromMinutes(1)),
+                    notBefore: DateTime.UtcNow,
+                    signingCredentials: new SigningCredentials(signingKey, SecurityAlgorithms.HmacSha256)
+                );
+                return new JwtSecurityTokenHandler().WriteToken(jwt);
+            }
+            return BadRequest();
         }
     }
 }

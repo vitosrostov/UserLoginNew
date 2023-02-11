@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+
 public class ApplicationContext : DbContext
 {
     public DbSet<Users> Users { get; set; } = null;
@@ -6,6 +7,8 @@ public class ApplicationContext : DbContext
     { 
     Database.EnsureCreated();
     }
+
+    
     //protected override void onmodelcreating(modelbuilder modelbuilder)
     //{
     //    modelbuilder.entity<users>().hasdata(
