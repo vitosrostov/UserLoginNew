@@ -29,14 +29,8 @@ namespace TokenApp.Controllers
         //https://localhost:7005/api/Account/GetToken
         public dynamic GetToken(string login, string pass, ApplicationContext db)
         {
-            
-            //var comps = db.Users.FromSqlRaw("Select Id FROM Users WHERE Login='Tom'").ToList();
-            // (select Id u => u.Login== "Tom").ToList();
-            //var comps = db.Users.Where(Users => Users.Login== login).ToString();
-            //var users = db.Users.ToList();
             var users = db.Users.Where(Users => Users.Login == login & Users.Pass == pass).ToList();
-            Console.WriteLine($"user is true:{users.Count}");
-            
+                        
             foreach (Users u in users)
             {
                 Console.WriteLine($"{u.Id} {u.Login} {u.Pass}");
