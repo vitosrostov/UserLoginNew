@@ -55,7 +55,7 @@ namespace TokenApp.Controllers
                 );
                 return new JwtSecurityTokenHandler().WriteToken(jwt);
             }
-            return BadRequest();
+            return Unauthorized();
         }
     }
 }
