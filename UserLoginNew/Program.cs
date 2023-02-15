@@ -39,7 +39,8 @@ builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
-
+builder.Services.AddTransient<IGetToken, GetTokenJWT>();
+builder.Services.AddSingleton<IDateTime, SystemDateTime>();
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -55,7 +56,9 @@ app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
-//app.MapPost("/api/login",(ApplicationContext db)=> db.Users.ToList());
+app.MapGet("/api/time",(IDateTime time)=> time.Now.ToString());
+app.MapGet("/api/tokenGet", (IGetToken token) => token.TokenGet("name"));
+
 app.MapPost("/api/login", async (HttpContext httpContext) =>
 {
     using StreamReader reader = new StreamReader(httpContext.Response.Body);

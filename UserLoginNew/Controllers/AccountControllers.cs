@@ -12,6 +12,8 @@ using System.Text;
 using System.Data;
 using Microsoft.EntityFrameworkCore;
 using System.Security.Cryptography.X509Certificates;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.OpenApi.Models;
 
 namespace TokenApp.Controllers
 {
@@ -19,17 +21,23 @@ namespace TokenApp.Controllers
     [Route("api/[controller]")]
     public class AccountController : Controller 
     {
+        private readonly IDateTime _datatime;
         private readonly JWTSettings _options;
-        public AccountController(IOptions<JWTSettings> optAccess)
+        private readonly ApplicationContext _context;
+        private readonly IGetToken _token;
+        public AccountController(IOptions<JWTSettings> optAccess, ApplicationContext context, IDateTime datetime, IGetToken token)
         {
+            _datatime = datetime;
             _options = optAccess.Value;
+            _context = context;
+            _token = token;
         }
 
         [HttpPost("GetToken")]
         //https://localhost:7005/api/Account/GetToken
-        public dynamic GetToken(string login, string pass, ApplicationContext db)
+        public string GetToken(string login, string pass)
         {
-            var users = db.Users.Where(Users => Users.Login == login & Users.Pass == pass).ToList();
+            var users = _context.Users.Where(Users => Users.Login == login & Users.Pass == pass).ToList();
                         
             foreach (Users u in users)
             {
@@ -38,24 +46,10 @@ namespace TokenApp.Controllers
            
             if (users.Count == 1)
             {
-                List<Claim> claims = new List<Claim>();
-                claims.Add(new Claim(ClaimTypes.Name, login));
-                claims.Add(new Claim("level", "123"));
-                claims.Add(new Claim(ClaimTypes.Role, "Admin"));
 
-                var signingKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_options.SecretKey));
-
-                var jwt = new JwtSecurityToken(
-                    issuer: _options.Issuer,
-                    audience: _options.Audience,
-                    claims: claims,
-                    expires: DateTime.UtcNow.Add(TimeSpan.FromMinutes(1)),
-                    notBefore: DateTime.UtcNow,
-                    signingCredentials: new SigningCredentials(signingKey, SecurityAlgorithms.HmacSha256)
-                );
-                return new JwtSecurityTokenHandler().WriteToken(jwt);
+                return _token.TokenGet(login);
             }
-            return Unauthorized();
+            return null;
         }
     }
 }
