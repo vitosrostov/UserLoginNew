@@ -5,7 +5,8 @@ namespace UserLoginNew.Controllers
 {
     [ApiController]
     [Route("[controller]")]
-    [Authorize]
+    [Authorize(Roles = UserRoles.User)]
+    //[Authorize(Roles = UserRoles.Admin)]
     public class WeatherForecastController : ControllerBase
     {
         private static readonly string[] Summaries = new[]

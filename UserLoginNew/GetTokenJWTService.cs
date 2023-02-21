@@ -9,22 +9,22 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace UserLoginNew
 {
-    public class GetTokenJWT : IGetToken
+    public class GetTokenJWTService : IGetToken
     {
         public string Test { get; set; } = "testing";
         private readonly JWTSettings _options;
-        public GetTokenJWT(IOptions<JWTSettings> optAccess)
+        public GetTokenJWTService(IOptions<JWTSettings> optAccess)
         {
             _options = optAccess.Value;
 
         }
 
-        public string TokenGet(string username)
+        public string TokenGet(string username, string role)
         { 
         List<Claim> claims = new List<Claim>();
         claims.Add(new Claim(ClaimTypes.Name, username));
         claims.Add(new Claim("level", "123"));
-        claims.Add(new Claim(ClaimTypes.Role, "Admin"));
+        claims.Add(new Claim(ClaimTypes.Role, role));
 
         var signingKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_options.SecretKey));
 

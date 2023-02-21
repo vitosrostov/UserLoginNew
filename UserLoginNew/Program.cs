@@ -39,8 +39,11 @@ builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
-builder.Services.AddTransient<IGetToken, GetTokenJWT>();
-builder.Services.AddSingleton<IDateTime, SystemDateTime>();
+builder.Services.AddTransient<IGetToken, GetTokenJWTService>();
+builder.Services.AddTransient<IDateTime, SystemDateTime>();
+builder.Services.AddSingleton<IBasketService, BasketService>();
+builder.Services.AddScoped<IBasketTempService, BasketService>();
+builder.Services.AddTransient<BuyTovar>();
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -57,12 +60,12 @@ app.UseAuthorization();
 
 app.MapControllers();
 app.MapGet("/api/time",(IDateTime time)=> time.Now.ToString());
-app.MapGet("/api/tokenGet", (IGetToken token) => token.TokenGet("name"));
+//app.MapGet("/api/tokenGet", (IGetToken token) => token.TokenGet("name"));
 
-app.MapPost("/api/login", async (HttpContext httpContext) =>
-{
-    using StreamReader reader = new StreamReader(httpContext.Response.Body);
-    string name = await reader.ReadToEndAsync();
-    return $"get data: {name}";
-});
+//app.MapPost("/api/login", async (HttpContext httpContext) =>
+//{
+ //   using StreamReader reader = new StreamReader(httpContext.Response.Body);
+//    string name = await reader.ReadToEndAsync();
+//    return $"get data: {name}";
+//});
 app.Run();

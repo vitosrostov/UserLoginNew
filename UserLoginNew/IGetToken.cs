@@ -5,6 +5,6 @@ namespace UserLoginNew
     public interface IGetToken
     {
         string Test { get; set; } 
-        string TokenGet(string username);
+        string TokenGet(string username, string role);
     }
 }
